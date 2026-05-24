@@ -62,7 +62,7 @@ python manage.py migrate
 python manage.py createsuperuser
 ```
 
-### 7. Criar médico de exemplo (opcional)
+### 7. Criar médico de exemplo (cadastrar médicos para agendar consultas com eles no sistema)
 ```bash
 python manage.py shell
 ```
@@ -72,6 +72,8 @@ from apps.autenticacao.models import PerfilUsuario
 medico = User.objects.create_user('dr.silva@clinica.com', 'dr.silva@clinica.com', 'senha12345')
 medico.first_name = 'João'; medico.last_name = 'Silva'; medico.save()
 PerfilUsuario.objects.create(user=medico, telefone='11999990000', tipo='medico')
+
+exit()
 ```
 
 ### 8. Iniciar servidor
@@ -108,30 +110,15 @@ projeto/
 └── requirements.txt
 ```
 
----
-
-## 🔒 Mapa de Requisitos → Implementação
-
-| Requisito | Implementação |
-|-----------|---------------|
-| 1.1–1.4 Hash PBKDF2+salt | `PASSWORD_HASHERS` Django nativo |
-| 1.5–1.6 2FA TOTP | `django-otp` + Google Authenticator |
-| 1.9–1.10 Sessão/Logout | `SESSION_COOKIE_AGE=900`, `logout()` invalida |
-| 1.11 Brute force | `django-axes` — bloqueia após 5 tentativas |
-| 2.1–2.7 Recuperação | `TokenRecuperacao` — 64 bytes, expira 1h, uso único |
-| 3.1–3.2 TLS/HTTPS | `SECURE_SSL_REDIRECT`, `HSTS` em produção |
-| 4.4–4.7 Consentimento | `ConsentimentoLGPD` — timestamp, versão, finalidade |
-| 4.8–4.10 Direitos titular | Views de consulta, exportação JSON, exclusão |
-| 5.1–5.4 Auditoria | `LogAuditoria` + `security.log` append-only |
+## Instruções para rodar (agrupadas para eu não perder de vista...):
 
 ---
 
-## ⚠️ Sobre o SQLite vs PostgreSQL
+venv\Scripts\activate
+python manage.py makemigrations autenticacao auditoria lgpd recuperacao agendamento
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
 
-Você estava certo em preferir PostgreSQL. O SQLite:
-- **Roda apenas localmente** (arquivo `db.sqlite3` na máquina)
-- **Não suporta políticas de acesso** (impossível fazer append-only no log — req 5.3)
-- **Sem suporte a `INET`** para IPs, `TIMESTAMPTZ` nativo
-- **Sem concorrência real** (trava escrita inteira)
+---
 
-O PostgreSQL resolve todos esses pontos e é adequado para produção.
