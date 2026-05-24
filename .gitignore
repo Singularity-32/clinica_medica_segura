@@ -1,0 +1,31 @@
+# ── Senhas e configurações sensíveis (NUNCA versionar)
+.env
+
+# ── Ambiente virtual Python
+venv/
+
+# ── Cache do Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# ── Banco de dados local (se usar SQLite eventualmente)
+*.sqlite3
+
+# ── Logs de auditoria (gerados em runtime)
+logs/
+*.log
+
+# ── Arquivos do VS Code
+.vscode/
+
+# ── Arquivos do sistema Windows
+Thumbs.db
+desktop.ini
+
+# ── Arquivos estáticos coletados (gerados pelo collectstatic)
+staticfiles/
+
+# ── Arquivos de mídia enviados por usuários
+media/

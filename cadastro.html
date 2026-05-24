@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block body_class %}auth-page{% endblock %}
+{% block title %}Cadastro{% endblock %}
+
+{% block content %}
+<div class="auth-card" style="max-width:480px">
+  <div class="auth-header">
+    <div class="logo">📋</div>
+    <h1>Cadastro de Paciente</h1>
+    <p>Apenas dados mínimos necessários (LGPD)</p>
+  </div>
+
+  <div class="auth-body">
+    {% if messages %}{% for m in messages %}
+    <div class="alert alert-{{ m.tags }}" style="margin-bottom:1rem">{{ m }}</div>
+    {% endfor %}{% endif %}
+
+    <form method="post" action="/auth/cadastro/" novalidate>
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label class="form-label" for="nome">Nome completo <span class="required">*</span></label>
+        <input type="text" id="nome" name="nome" class="form-control"
+               value="{{ form_data.nome|default:'' }}" required autocomplete="name">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="email">E-mail <span class="required">*</span></label>
+        <input type="email" id="email" name="email" class="form-control"
+               value="{{ form_data.email|default:'' }}" required autocomplete="email">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="telefone">Telefone <span class="required">*</span></label>
+        <input type="tel" id="telefone" name="telefone" class="form-control"
+               value="{{ form_data.telefone|default:'' }}" placeholder="(11) 99999-9999" required>
+        <span class="form-hint">Coletado apenas para contato em urgências (LGPD - finalidade específica).</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="senha">Senha <span class="required">*</span></label>
+        <input type="password" id="senha" name="senha" class="form-control"
+               minlength="8" required autocomplete="new-password">
+        <span class="form-hint">Mínimo 8 caracteres. Armazenada com PBKDF2+SHA256+salt (RNF01).</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="senha2">Confirme a senha <span class="required">*</span></label>
+        <input type="password" id="senha2" name="senha2" class="form-control"
+               required autocomplete="new-password">
+      </div>
+
+      <!-- Consentimento LGPD (RNE01 / req 4.4) -->
+      <div class="consent-box">
+        <strong>Termos de Uso e Política de Privacidade — v1.0</strong><br><br>
+        O Sistema de Agendamento Clínico Seguro coleta os seguintes dados pessoais:
+        Nome, E-mail e Telefone, para a finalidade exclusiva de <em>agendamento de consultas médicas
+        e comunicação com o paciente</em>, conforme a Lei Geral de Proteção de Dados (Lei nº 13.709/2018 — LGPD).
+        Você pode exportar ou excluir seus dados a qualquer momento pelo painel "Meus Dados".
+        O consentimento é livre, informado e registrado com timestamp e versão do termo.
+      </div>
+
+      <div class="checkbox-group">
+        <input type="checkbox" id="consentimento" name="consentimento" required>
+        <label for="consentimento" style="font-size:.9rem">
+          Li e concordo com os Termos de Uso e autorizo o tratamento dos meus dados pessoais
+          conforme a LGPD. <span class="required">*</span>
+        </label>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-full" style="margin-top:1rem">
+        ✅ Criar conta
+      </button>
+    </form>
+  </div>
+
+  <div class="auth-footer">
+    Já tem conta? <a href="/auth/login/">Entrar</a>
+  </div>
+</div>
+{% endblock %}

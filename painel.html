@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% block title %}Painel{% endblock %}
+{% block nav_painel %}active{% endblock %}
+
+{% block content %}
+<h2 style="margin-bottom:1.5rem;font-size:1.3rem">
+  Olá, {{ user.first_name }}! 👋
+  <span style="font-size:.9rem;font-weight:400;color:var(--text-muted)">
+    — Último acesso: {{ perfil.ultimo_acesso|date:"d/m/Y H:i"|default:"—" }}
+  </span>
+</h2>
+
+<!-- Status de segurança -->
+{% if not otp_configurado %}
+<div class="security-status security-warn" style="margin-bottom:1.5rem;border-radius:var(--radius)">
+  <span class="security-icon">⚠️</span>
+  <div>
+    <strong>2FA não configurado!</strong>
+    <span style="font-size:.88rem;color:var(--text-muted);display:block">
+      Configure agora para proteger sua conta.
+    </span>
+  </div>
+  <a href="/auth/configurar-2fa/" class="btn btn-primary btn-sm" style="margin-left:auto">
+    Configurar 2FA
+  </a>
+</div>
+{% else %}
+<div class="security-status security-ok" style="margin-bottom:1.5rem;border-radius:var(--radius)">
+  <span class="security-icon">✅</span>
+  <strong>Conta protegida com 2FA ativo</strong>
+  <span class="badge badge-success" style="margin-left:.5rem">Seguro</span>
+</div>
+{% endif %}
+
+<!-- Stats -->
+<div class="dashboard-grid">
+  <div class="stat-card">
+    <span class="stat-icon">📅</span>
+    <div class="stat-info">
+      <div class="stat-value">{{ agendamentos|length }}</div>
+      <div class="stat-label">Agendamentos</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <span class="stat-icon">🔐</span>
+    <div class="stat-info">
+      <div class="stat-value">{% if otp_configurado %}Ativo{% else %}Inativo{% endif %}</div>
+      <div class="stat-label">2FA</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <span class="stat-icon">⚖️</span>
+    <div class="stat-info">
+      <div class="stat-value">LGPD</div>
+      <div class="stat-label">Consentimento ativo</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <span class="stat-icon">🏥</span>
+    <div class="stat-info">
+      <div class="stat-value">{{ perfil.tipo|capfirst|default:"Paciente" }}</div>
+      <div class="stat-label">Perfil</div>
+    </div>
+  </div>
+</div>
+
+<!-- Ações rápidas -->
+<div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2rem">
+  <a href="/agendamento/novo/" class="btn btn-primary">📅 Novo agendamento</a>
+  <a href="/lgpd/" class="btn btn-outline">⚖️ Meus dados (LGPD)</a>
+  <a href="/auth/configurar-2fa/" class="btn btn-outline">🔑 Gerenciar 2FA</a>
+</div>
+
+<!-- Tabela de agendamentos -->
+<div class="card">
+  <div class="card-header">
+    <span class="card-icon">📋</span>
+    <h2>Meus Agendamentos</h2>
+  </div>
+  <div class="card-body" style="padding:0">
+    {% if agendamentos %}
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Médico</th>
+            <th>Data e Hora</th>
+            <th>Status</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ag in agendamentos %}
+          <tr>
+            <td>{{ ag.pk }}</td>
+            <td>Dr. {{ ag.medico.get_full_name }}</td>
+            <td>{{ ag.data_hora|date:"d/m/Y H:i" }}</td>
+            <td>
+              <span class="badge {% if ag.status == 'agendado' %}badge-info{% elif ag.status == 'cancelado' %}badge-danger{% else %}badge-success{% endif %}">
+                {{ ag.get_status_display }}
+              </span>
+            </td>
+            <td>
+              {% if ag.status == 'agendado' %}
+              <form method="post" action="/agendamento/cancelar/{{ ag.pk }}/" style="display:inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm"
+                        data-confirm="Confirma o cancelamento desta consulta?">
+                  Cancelar
+                </button>
+              </form>
+              {% else %}—{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div style="text-align:center;padding:2rem;color:var(--text-muted)">
+      <p style="font-size:2rem">📅</p>
+      <p>Nenhum agendamento ainda.</p>
+      <a href="/agendamento/novo/" class="btn btn-primary" style="margin-top:1rem">Agendar consulta</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

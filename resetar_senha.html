@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block body_class %}auth-page{% endblock %}
+{% block title %}Nova Senha{% endblock %}
+{% block content %}
+<div class="auth-card">
+  <div class="auth-header">
+    <div class="logo">🔑</div>
+    <h1>Definir Nova Senha</h1>
+    <p>Token válido e seguro</p>
+  </div>
+  <div class="auth-body">
+    {% if messages %}{% for m in messages %}
+    <div class="alert alert-{{ m.tags }}" style="margin-bottom:1rem">{{ m }}</div>
+    {% endfor %}{% endif %}
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label" for="senha">Nova senha <span class="required">*</span></label>
+        <input type="password" id="senha" name="senha" class="form-control" minlength="8" required autocomplete="new-password">
+        <span class="form-hint">Mínimo 8 caracteres.</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="senha2">Confirme <span class="required">*</span></label>
+        <input type="password" id="senha2" name="senha2" class="form-control" required autocomplete="new-password">
+      </div>
+      <button type="submit" class="btn btn-primary btn-full">🔐 Redefinir senha</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

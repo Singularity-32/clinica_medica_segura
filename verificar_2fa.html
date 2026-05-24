@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block body_class %}auth-page{% endblock %}
+{% block title %}Verificação 2FA{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+  <div class="auth-header">
+    <div class="logo">🔑</div>
+    <h1>Verificação em Duas Etapas</h1>
+    <p>{{ email }}</p>
+  </div>
+
+  <div class="auth-body">
+    {% if messages %}{% for m in messages %}
+    <div class="alert alert-{{ m.tags }}" style="margin-bottom:1rem">{{ m }}</div>
+    {% endfor %}{% endif %}
+
+    <p style="font-size:.92rem;color:var(--text-muted);margin-bottom:1.5rem;text-align:center">
+      Abra o <strong>Google Authenticator</strong> e insira o código de 6 dígitos gerado para
+      <em>Clínica Segura</em>.
+    </p>
+
+    <form method="post" action="/auth/verificar-2fa/">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label" for="token" style="text-align:center;display:block">
+          Código TOTP <span class="required">*</span>
+        </label>
+        <input type="text" id="token" name="token" class="form-control token-input"
+               maxlength="6" inputmode="numeric" pattern="[0-9]{6}"
+               placeholder="000000" autofocus required>
+        <span class="form-hint" style="text-align:center;display:block">
+          O código se renova a cada 30 segundos.
+        </span>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-full">
+        🔐 Verificar e Entrar
+      </button>
+    </form>
+
+    <div style="text-align:center;margin-top:1rem">
+      <a href="/auth/login/" style="font-size:.85rem;color:var(--text-muted)">
+        ← Voltar ao login
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

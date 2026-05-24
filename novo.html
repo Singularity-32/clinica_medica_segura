@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Novo Agendamento{% endblock %}
+{% block nav_agendar %}active{% endblock %}
+
+{% block content %}
+<div style="max-width:520px;margin:0 auto">
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">📅</span>
+      <h2>Agendar Consulta</h2>
+    </div>
+    <div class="card-body">
+      {% if messages %}{% for m in messages %}
+      <div class="alert alert-{{ m.tags }}" style="margin-bottom:1rem">{{ m }}</div>
+      {% endfor %}{% endif %}
+
+      <form method="post" action="/agendamento/novo/">
+        {% csrf_token %}
+        <div class="form-group">
+          <label class="form-label" for="medico_id">Médico <span class="required">*</span></label>
+          <select id="medico_id" name="medico_id" class="form-control" required>
+            <option value="">Selecione um médico...</option>
+            {% for medico in medicos %}
+            <option value="{{ medico.pk }}">Dr. {{ medico.get_full_name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="data_hora">Data e Hora <span class="required">*</span></label>
+          <input type="datetime-local" id="data_hora" name="data_hora" class="form-control" required>
+        </div>
+
+        <div style="display:flex;gap:1rem;margin-top:1rem">
+          <button type="submit" class="btn btn-primary btn-full">✅ Confirmar agendamento</button>
+          <a href="/painel/" class="btn btn-outline">Cancelar</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

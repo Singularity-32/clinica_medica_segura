@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block title %}Configurar 2FA{% endblock %}
+{% block nav_painel %}active{% endblock %}
+
+{% block content %}
+<div style="max-width:560px;margin:0 auto">
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">🔑</span>
+      <h2>Configurar Autenticação em Dois Fatores (2FA)</h2>
+    </div>
+    <div class="card-body">
+
+      {% if ja_configurado %}
+      <div class="security-status security-ok">
+        <span class="security-icon">✅</span>
+        <div>
+          <strong>2FA já está ativo na sua conta.</strong><br>
+          <span style="font-size:.85rem;color:var(--text-muted)">Para reconfigurar, escaneie o QR Code abaixo com um novo dispositivo.</span>
+        </div>
+      </div>
+      {% else %}
+      <div class="security-status security-warn">
+        <span class="security-icon">⚠️</span>
+        <div>
+          <strong>2FA ainda não configurado.</strong><br>
+          <span style="font-size:.85rem;color:var(--text-muted)">Configure agora para proteger sua conta (obrigatório pelo RNE02).</span>
+        </div>
+      </div>
+      {% endif %}
+
+      <h3 style="margin:1.5rem 0 .75rem;font-size:.95rem;color:var(--primary)">
+        📱 Passo 1 — Escaneie o QR Code
+      </h3>
+      <p style="font-size:.88rem;color:var(--text-muted);margin-bottom:.75rem">
+        Abra o <strong>Google Authenticator</strong> (ou Authy) e escaneie o código abaixo:
+      </p>
+
+      <div class="qr-container">
+        <img src="data:image/png;base64,{{ qr_b64 }}" alt="QR Code 2FA">
+        <p style="margin-top:.75rem;font-size:.78rem;color:var(--text-muted)">
+          Não consegue escanear? Use o código manual abaixo.
+        </p>
+        <code style="background:#f1f5f9;padding:.3rem .7rem;border-radius:4px;font-size:.85rem;display:block;margin-top:.4rem;word-break:break-all">
+          {{ secret }}
+        </code>
+      </div>
+
+      <h3 style="margin:1.5rem 0 .75rem;font-size:.95rem;color:var(--primary)">
+        🔢 Passo 2 — Confirme com o código gerado
+      </h3>
+
+      {% if messages %}{% for m in messages %}
+      <div class="alert alert-{{ m.tags }}" style="margin-bottom:1rem">{{ m }}</div>
+      {% endfor %}{% endif %}
+
+      <form method="post" action="/auth/configurar-2fa/">
+        {% csrf_token %}
+        <div class="form-group">
+          <input type="text" name="token" class="form-control token-input"
+                 maxlength="6" inputmode="numeric" placeholder="000000" required autofocus>
+        </div>
+        <button type="submit" class="btn btn-success btn-full">
+          ✅ Ativar 2FA
+        </button>
+      </form>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

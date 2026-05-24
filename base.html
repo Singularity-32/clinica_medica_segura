@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <!-- Segurança: impede sniffing de MIME type -->
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <title>{% block title %}Clínica Segura{% endblock %} | Sistema de Agendamento Clínico Seguro</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+
+  {% if user.is_authenticated %}
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <span class="brand-icon">🏥</span>
+      <span class="brand-text">Clínica Segura</span>
+    </div>
+    <ul class="navbar-menu">
+      <li><a href="/painel/" class="nav-link {% block nav_painel %}{% endblock %}">Painel</a></li>
+      <li><a href="/agendamento/novo/" class="nav-link {% block nav_agendar %}{% endblock %}">Agendar</a></li>
+      <li><a href="/lgpd/" class="nav-link {% block nav_lgpd %}{% endblock %}">Meus Dados</a></li>
+    </ul>
+    <div class="navbar-user">
+      <span class="user-info">
+        <span class="user-icon">👤</span>
+        {{ user.first_name }}
+        {% if not otp_configurado %}
+          <span class="badge badge-warn">2FA pendente</span>
+        {% endif %}
+      </span>
+      <form method="post" action="/auth/logout/" style="display:inline">
+        {% csrf_token %}
+        <button type="submit" class="btn-logout">Sair</button>
+      </form>
+    </div>
+  </nav>
+  {% endif %}
+
+  <main class="main-content">
+    {% if messages %}
+    <div class="messages-container">
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">
+        <span class="alert-icon">
+          {% if message.tags == 'success' %}✅
+          {% elif message.tags == 'error' %}❌
+          {% elif message.tags == 'warning' %}⚠️
+          {% else %}ℹ️{% endif %}
+        </span>
+        {{ message }}
+        <button class="alert-close" onclick="this.parentElement.remove()">×</button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <p>Sistema de Agendamento Clínico Seguro &mdash; Security by Design &mdash; LGPD em Conformidade</p>
+    <p class="footer-sub">Samuel Oliveira Acácio · RGM 11231100856 · Engenharia de Software · UMC 2026</p>
+  </footer>
+
+  <script src="/static/js/main.js"></script>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

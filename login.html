@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block body_class %}auth-page{% endblock %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="auth-card">
+  <div class="auth-header">
+    <div class="logo">🏥</div>
+    <h1>Clínica Segura</h1>
+    <p>Acesso ao sistema — autenticação segura</p>
+  </div>
+
+  <div class="auth-body">
+    {% if messages %}
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}" style="margin-bottom:1rem">
+        {{ message }}
+      </div>
+      {% endfor %}
+    {% endif %}
+
+    {% if request.GET.timeout %}
+    <div class="alert alert-warning" style="margin-bottom:1rem">
+      ⚠️ Sua sessão expirou por inatividade.
+    </div>
+    {% endif %}
+
+    <form method="post" action="/auth/login/" novalidate>
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label" for="email">E-mail <span class="required">*</span></label>
+        <input type="email" id="email" name="email" class="form-control"
+               placeholder="seu@email.com" required autocomplete="email">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="senha">Senha <span class="required">*</span></label>
+        <div style="position:relative">
+          <input type="password" id="senha" name="senha" class="form-control"
+                 placeholder="Mínimo 8 caracteres" required autocomplete="current-password">
+          <button type="button" class="toggle-password"
+                  data-target="#senha"
+                  style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1.1rem">👁</button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-full" style="margin-top:.5rem">
+        🔐 Entrar
+      </button>
+    </form>
+
+    <div class="divider">ou</div>
+
+    <div style="text-align:center">
+      <a href="/recuperacao/" class="auth-footer" style="font-size:.88rem;color:var(--primary)">
+        Esqueci minha senha
+      </a>
+    </div>
+  </div>
+
+  <div class="auth-footer">
+    Não tem conta? <a href="/auth/cadastro/">Cadastre-se</a>
+  </div>
+</div>
+{% endblock %}

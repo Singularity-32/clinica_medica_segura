@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}Meus Dados — LGPD{% endblock %}
+{% block nav_lgpd %}active{% endblock %}
+
+{% block content %}
+<h2 style="margin-bottom:1.5rem">⚖️ Meus Dados Pessoais — Direitos do Titular (LGPD)</h2>
+
+<!-- Dados do titular -->
+<div class="card" style="margin-bottom:1.5rem">
+  <div class="card-header">
+    <span class="card-icon">👤</span>
+    <h2>Consulta aos Dados (req 4.8)</h2>
+  </div>
+  <div class="card-body">
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead><tr><th>Campo</th><th>Valor</th><th>Finalidade</th></tr></thead>
+        <tbody>
+          {% for item in dados_coletados %}
+          <tr>
+            <td>{{ item.campo }}</td>
+            <td>
+              {% if item.campo == 'Nome completo' %}{{ user.get_full_name }}
+              {% elif item.campo == 'E-mail' %}{{ user.email }}
+              {% elif item.campo == 'Telefone' %}{{ user.perfil.telefone }}
+              {% elif item.campo == 'Dados de agendamento' %}{{ user.agendamentos.count }} registro(s)
+              {% else %}Registrado{% endif %}
+            </td>
+            <td>{{ item.finalidade }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Consentimento -->
+<div class="card" style="margin-bottom:1.5rem">
+  <div class="card-header">
+    <span class="card-icon">📄</span>
+    <h2>Consentimento Registrado (req 4.4 / 4.7)</h2>
+  </div>
+  <div class="card-body">
+    {% if consentimento %}
+    <div class="table-wrapper">
+      <table>
+        <tbody>
+          <tr><td><strong>Status</strong></td><td>{% if consentimento.consentiu %}<span class="badge badge-success">✅ Ativo</span>{% else %}<span class="badge badge-danger">❌ Revogado</span>{% endif %}</td></tr>
+          <tr><td><strong>Versão do Termo</strong></td><td>v{{ consentimento.versao_termo }}</td></tr>
+          <tr><td><strong>Data do Consentimento</strong></td><td>{{ consentimento.data_consentimento|date:"d/m/Y H:i:s" }}</td></tr>
+          <tr><td><strong>Finalidade</strong></td><td>{{ consentimento.finalidade }}</td></tr>
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p style="color:var(--text-muted)">Nenhum registro de consentimento encontrado.</p>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Exportação -->
+<div class="card" style="margin-bottom:1.5rem">
+  <div class="card-header">
+    <span class="card-icon">📥</span>
+    <h2>Exportar Meus Dados (req 4.9 / RF04)</h2>
+  </div>
+  <div class="card-body">
+    <p style="color:var(--text-muted);margin-bottom:1rem;font-size:.92rem">
+      Baixe um arquivo JSON com todos os seus dados pessoais armazenados no sistema.
+    </p>
+    <a href="/lgpd/exportar/" class="btn btn-primary">
+      📥 Baixar meus dados (JSON)
+    </a>
+  </div>
+</div>
+
+<!-- Zona de perigo — Exclusão -->
+<div class="danger-zone">
+  <h3>⚠️ Excluir Minha Conta (req 4.10 / RF05)</h3>
+  <p style="font-size:.9rem;color:var(--text-muted);margin:.75rem 0">
+    Esta ação <strong>revoga seu consentimento</strong> e <strong>apaga permanentemente</strong>
+    todos os seus dados pessoais, incluindo agendamentos. Esta operação é <strong>irreversível</strong>.
+  </p>
+  <form method="post" action="/lgpd/excluir/">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger"
+            data-confirm="⚠️ ATENÇÃO: Isso apagará TODOS os seus dados permanentemente. Tem certeza absoluta?">
+      🗑️ Excluir minha conta e todos os dados
+    </button>
+  </form>
+</div>
+
+{% endblock %}

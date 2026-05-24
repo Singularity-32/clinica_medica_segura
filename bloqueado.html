@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block body_class %}auth-page{% endblock %}
+{% block title %}Acesso Bloqueado{% endblock %}
+{% block content %}
+<div class="auth-card">
+  <div class="auth-header" style="background:var(--danger)">
+    <div class="logo">🚫</div>
+    <h1>Acesso Temporariamente Bloqueado</h1>
+  </div>
+  <div class="auth-body lockout-page">
+    <div class="lockout-icon">🔒</div>
+    <h2 style="margin-bottom:.75rem">Muitas tentativas incorretas</h2>
+    <p style="color:var(--text-muted);margin-bottom:1rem">
+      O acesso para <strong>{{ email }}</strong> foi bloqueado por
+      <strong>{{ tempo_bloqueio }}</strong> após 5 tentativas consecutivas inválidas.<br><br>
+      Este bloqueio é uma medida de proteção contra ataques de força bruta (RNF02 / req 1.11).
+    </p>
+    <a href="/recuperacao/" class="btn btn-outline">📧 Recuperar minha senha</a>
+  </div>
+</div>
+{% endblock %}
