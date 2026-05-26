@@ -69,16 +69,13 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # ─── BANCO DE DADOS - PostgreSQL (RNF, req 3.4) ───────────────────────────────
+import dj_database_url # type: ignore
+
 DATABASES = {
-    'default':  {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'clinica_segura',
-        'USER': 'postgres',
-        'PASSWORD': 'Clinica2026',
-        'HOST': 'localhost',
-        'PORT': '5433',
-    }
-    }
+    'default': dj_database_url.parse(
+        os.environ.get('DATABASE_URL', 'postgresql://clinica_segura_user:lpkza5IsO86blicnaRmtI0M60R3bV8EF@dpg-d8aecs6k1jcs73ftjve0-a.oregon-postgres.render.com/clinica_segura')
+    )
+}
 
 
 # ─── HASH DE SENHA - PBKDF2 com SHA256 (RNF01, req 1.1) ─────────────────────
