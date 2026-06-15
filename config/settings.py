@@ -68,7 +68,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# ─── BANCO DE DADOS - PostgreSQL (RNF, req 3.4) ───────────────────────────────
+# ─── BANCO DE DADOS - Render/PostgreSQL (RNF, req 3.4) ───────────────────────────────
 import dj_database_url # type: ignore
 
 DATABASES = {
