@@ -20,5 +20,3 @@ django-axes==6.4.0
 # Variáveis de ambiente (boas práticas)
 python-decouple==3.8
 
-# Testes de SCA (Trivy)
-Django==4.0.0
