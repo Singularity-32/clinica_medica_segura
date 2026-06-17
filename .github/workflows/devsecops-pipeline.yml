@@ -28,13 +28,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Trivy
-        run: |
-          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin latest
-
       - name: Run Trivy vulnerability scanner
-        run: |
-          trivy fs --severity HIGH,CRITICAL --format json --output trivy-results.json .
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: json
+          output: trivy-results.json
+          severity: HIGH,CRITICAL
 
       - name: Upload Trivy report and keep job green
         run: |
