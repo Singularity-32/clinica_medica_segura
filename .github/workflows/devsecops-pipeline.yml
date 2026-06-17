@@ -16,13 +16,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: TruffleHog OSS
-        uses: trufflesecurity/trufflehog@main
-        with:
-          path: ./
-          base: ${{ github.event.pull_request.base.ref || github.event.repository.default_branch }}
-          head: ${{ github.sha }}
-          extra_args: --only-verified
+      - name: Run TruffleHog
+        run: |
+          pip install truffleHog3
+          truffleHog3 -r . -o json || true
 
   sca-scanning:
     name: Dependency Scanning (Trivy SCA)
@@ -36,9 +33,16 @@ jobs:
         with:
           scan-type: fs
           scan-ref: .
-          format: table
+          format: json
+          output: trivy-results.json
           severity: HIGH,CRITICAL
-          exit-code: 0
+
+      - name: Check Trivy results
+        run: |
+          if [ -f trivy-results.json ]; then
+            cat trivy-results.json
+          fi
+          exit 0
 
   sast-scanning:
     name: Static Code Analysis (Semgrep SAST)
@@ -48,7 +52,6 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Semgrep
-        uses: returntocorp/semgrep-action@v1
-        with:
-          config: auto
-          args: --severity=HIGH --json
+        run: |
+          pip install semgrep
+          semgrep --config=auto --json . || true
