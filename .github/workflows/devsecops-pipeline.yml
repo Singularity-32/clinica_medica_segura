@@ -28,16 +28,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.20.0
-        with:
-          scan-type: fs
-          scan-ref: .
-          format: json
-          output: trivy-results.json
-          severity: HIGH,CRITICAL
+      - name: Install Trivy
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin latest
 
-      - name: Check Trivy results
+      - name: Run Trivy vulnerability scanner
+        run: |
+          trivy fs --severity HIGH,CRITICAL --format json --output trivy-results.json .
+
+      - name: Upload Trivy report and keep job green
         run: |
           if [ -f trivy-results.json ]; then
             cat trivy-results.json
