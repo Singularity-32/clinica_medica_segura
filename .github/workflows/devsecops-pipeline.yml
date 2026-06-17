@@ -1,0 +1,53 @@
+﻿name: DevSecOps pipeline
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  secrets-scanning:
+    name: Secrets Scanning (TruffleHog)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: TruffleHog OSS
+        uses: trufflesecurity/trufflehog-oss-action@v1
+        with:
+          base: ${{ github.event.pull_request.base.ref || github.event.repository.default_branch }}
+          head: ${{ github.sha }}
+          extra_args: --only-verified
+
+  sca-scanning:
+    name: Dependency Scanning (Trivy SCA)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Trivy
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v1.6.4
+
+      - name: Run Trivy vulnerability scanner
+        run: |
+          trivy fs --severity HIGH,CRITICAL --exit-code 1 --no-progress .
+
+  sast-scanning:
+    name: Static Code Analysis (Semgrep SAST)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: auto
+          error: true
+          severity: HIGH
